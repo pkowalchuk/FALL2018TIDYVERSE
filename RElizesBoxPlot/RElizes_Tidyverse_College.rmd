@@ -101,6 +101,11 @@ boxplot(data, ylab = "Salaries", xlab="Engineering Majors",
         las = 2, col = c("red","blue","orange","green","yellow","brown"))
 ```
 
+```{r}
+plot(data)
+```
+
+
 ## Rooms for Improvement
 
 Certainly there could be room for improvement.
