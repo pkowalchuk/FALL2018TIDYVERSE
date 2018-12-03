@@ -1,0 +1,65 @@
+---
+title: "tidyverse"
+author: "Peter Kowalchuk"
+date: "December 3, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Income Statement Wide Table Generator
+
+The following R script loads income statements from EDGAR and builds a wide table with entries for all companies. For this exercise Google and Facebook are added to the table.
+
+The finreportr package is used to scrape data out of the EDGAR site
+
+```{r}
+install.packages("finreportr")
+```
+
+finreportr and tidyverse libraries are loaded
+
+```{r}
+library(finreportr)
+library(tidyverse)
+```
+
+Income statement for Google is loaded
+
+```{r}
+inc_g<-GetIncome("GOOG", 2017)
+inc_g
+```
+
+A wide table for Google is created
+
+```{r}
+inc_wide_g<-inc_g %>% spread(Metric,Amount)
+inc_wide_g <- inc_wide_g %>% mutate(company="Google")
+inc_wide_g
+```
+
+Facebook income statement is loaded
+
+```{r}
+inc_f<-GetIncome("FB", 2017)
+inc_f
+```
+
+A wide table for Facebook is created
+
+```{r}
+inc_wide_f<-inc_f %>% spread(Metric,Amount)
+inc_wide_f <- inc_wide_f %>% mutate(company="Facebook")
+inc_wide_f
+```
+
+A wide table containing all companies is created
+
+```{r}
+inc_all<-bind_rows(inc_wide_f,inc_wide_g)
+inc_all
+```
+
