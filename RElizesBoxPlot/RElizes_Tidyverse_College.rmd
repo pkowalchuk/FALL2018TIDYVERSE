@@ -35,13 +35,27 @@ options(knitr.table.format = "html")
 
 I defined some functions to help me calculate the mean and the standard deviation of the data. Since we do not know the mean and the standard deviation for row of data, I had to create a rough calculation. Given the size, 25th percentile, and 75th percentile values, I used them to create a random set of numbers using the runif function. Since we do not know the minimum value and the maximum value of the data, I had to use the 25th and 75th percentile values as the them respectively. The biggest caveat in using these functions is that the mean and sd functions will generate random set of numbers. That means that the mean and standard deviation may not be accurate based on the random sample. 
 ```{r calculateFunctions, eval=TRUE, fig.width = 10, fig.height = 4, message=FALSE, warning=FALSE }
+
+unif<-vector()
+unif_par<-c(0,0,0)
+
+calculate_runif<-function(Size, minval, maxval) {
+  if (c(Size, minval, maxval)!=unif_par) {
+   unif<-runif(Size, minval, maxval)
+   unif_par<-c(Size, minval, maxval)
+   return(unif)
+  } else {
+    return(unif)
+  }
+}
+
 calculateMean <- function(Size, minval, maxval) {
-    calcvalue <- mean(runif(Size, minval, maxval))
+    calcvalue <- mean(calculate_runif(Size, minval, maxval))
     return(calcvalue)
 }
 
 calculateSD <- function(Size, minval, maxval) {
-    calcvalue <- sd(runif(Size, minval, maxval))
+    calcvalue <- sd(calculate_runif(Size, minval, maxval))
     return(calcvalue)
 }
 
@@ -101,6 +115,8 @@ boxplot(data, ylab = "Salaries", xlab="Engineering Majors",
         las = 2, col = c("red","blue","orange","green","yellow","brown"))
 ```
 
+##Multivariable plot
+
 ```{r}
 plot(data)
 ```
@@ -111,6 +127,7 @@ plot(data)
 Certainly there could be room for improvement.
 
 - Is it possible to create a function that uses the same runif function and be able to calculate the mean and standard deviation of the resulting data set? The mean and standard deviation would be more aligned.
+**Function calculate_runif added. This function returns a unif distribution. It checks the input parameters, if these are different from the most resent unif generated it returns a new unif, if they are the same it return the same unif. This way if mean and sd are called in sequence with the same parameters, they will both use the same unif distribution. This satisfies the improvement requested.**
 
 - I was hoping to create a dual axis bar and line chart to show salaries on the first Y axis and unemployment on the second Y axis.
 

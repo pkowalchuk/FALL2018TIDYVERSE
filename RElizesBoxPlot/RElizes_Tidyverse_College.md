@@ -36,13 +36,26 @@ Define Functions
 I defined some functions to help me calculate the mean and the standard deviation of the data. Since we do not know the mean and the standard deviation for row of data, I had to create a rough calculation. Given the size, 25th percentile, and 75th percentile values, I used them to create a random set of numbers using the runif function. Since we do not know the minimum value and the maximum value of the data, I had to use the 25th and 75th percentile values as the them respectively. The biggest caveat in using these functions is that the mean and sd functions will generate random set of numbers. That means that the mean and standard deviation may not be accurate based on the random sample.
 
 ``` r
+unif<-vector()
+unif_par<-c(0,0,0)
+
+calculate_runif<-function(Size, minval, maxval) {
+  if (c(Size, minval, maxval)!=unif_par) {
+   unif<-runif(Size, minval, maxval)
+   unif_par<-c(Size, minval, maxval)
+   return(unif)
+  } else {
+    return(unif)
+  }
+}
+
 calculateMean <- function(Size, minval, maxval) {
-    calcvalue <- mean(runif(Size, minval, maxval))
+    calcvalue <- mean(calculate_runif(Size, minval, maxval))
     return(calcvalue)
 }
 
 calculateSD <- function(Size, minval, maxval) {
-    calcvalue <- sd(runif(Size, minval, maxval))
+    calcvalue <- sd(calculate_runif(Size, minval, maxval))
     return(calcvalue)
 }
 ```
@@ -11452,10 +11465,10 @@ PETROLEUM ENGINEERING
 125000
 </td>
 <td style="text-align:right;">
-109826.13
+111570.46
 </td>
 <td style="text-align:right;">
-8966.478
+9044.485
 </td>
 </tr>
 <tr>
@@ -11475,10 +11488,10 @@ MINING AND MINERAL ENGINEERING
 90000
 </td>
 <td style="text-align:right;">
-69712.40
+70501.41
 </td>
 <td style="text-align:right;">
-7513.078
+7497.427
 </td>
 </tr>
 <tr>
@@ -11498,10 +11511,10 @@ METALLURGICAL ENGINEERING
 105000
 </td>
 <td style="text-align:right;">
-72860.49
+79948.78
 </td>
 <td style="text-align:right;">
-9741.580
+12117.675
 </td>
 </tr>
 <tr>
@@ -11521,10 +11534,10 @@ NAVAL ARCHITECTURE AND MARINE ENGINEERING
 80000
 </td>
 <td style="text-align:right;">
-59246.09
+61441.81
 </td>
 <td style="text-align:right;">
-10668.593
+10044.599
 </td>
 </tr>
 <tr>
@@ -11544,10 +11557,10 @@ CHEMICAL ENGINEERING
 75000
 </td>
 <td style="text-align:right;">
-62965.93
+62221.36
 </td>
 <td style="text-align:right;">
-7275.617
+7180.343
 </td>
 </tr>
 <tr>
@@ -11567,10 +11580,10 @@ NUCLEAR ENGINEERING
 102000
 </td>
 <td style="text-align:right;">
-75733.24
+78908.75
 </td>
 <td style="text-align:right;">
-13476.805
+12976.398
 </td>
 </tr>
 </tbody>
@@ -11592,6 +11605,9 @@ boxplot(data, ylab = "Salaries", xlab="Engineering Majors",
 
 ![](RElizes_Tidyverse_College_files/figure-markdown_github/load-data-1.png)
 
+Multivariable plot
+------------------
+
 ``` r
 plot(data)
 ```
@@ -11603,7 +11619,7 @@ Rooms for Improvement
 
 Certainly there could be room for improvement.
 
--   Is it possible to create a function that uses the same runif function and be able to calculate the mean and standard deviation of the resulting data set? The mean and standard deviation would be more aligned.
+-   Is it possible to create a function that uses the same runif function and be able to calculate the mean and standard deviation of the resulting data set? The mean and standard deviation would be more aligned. **Function calculate\_runif added. This function returns a unif distribution. It checks the input parameters, if these are different from the most resent unif generated it returns a new unif, if they are the same it return the same unif. This way if mean and sd are called in sequence with the same parameters, they will both use the same unif distribution. This satisfies the improvement requested.**
 
 -   I was hoping to create a dual axis bar and line chart to show salaries on the first Y axis and unemployment on the second Y axis.
 
