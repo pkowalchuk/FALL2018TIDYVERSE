@@ -1,5 +1,5 @@
 ---
-title: "tidyverse"
+title: "tidyverse recepies"
 author: "Peter Kowalchuk"
 date: "December 3, 2018"
 output: html_document
@@ -11,12 +11,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Income Statement Wide Table Generator
 
+###Summary
 The following R script loads income statements from EDGAR and builds a wide table with entries for all companies. For this exercise Google and Facebook are added to the table.
 
-The finreportr package is used to scrape data out of the EDGAR site
+
+#### Load Libraries
+
+The finreportr package is used to scrape data out of the EDGAR site together with the tidyverse package
 
 ```{r}
-install.packages("finreportr")
+#install.packages("finreportr")
+#install.packages("tidyverse")
 ```
 
 finreportr and tidyverse libraries are loaded
@@ -24,42 +29,80 @@ finreportr and tidyverse libraries are loaded
 ```{r}
 library(finreportr)
 library(tidyverse)
+library(kableExtra)
 ```
+
+### Load income statements
 
 Income statement for Google is loaded
 
 ```{r}
 inc_g<-GetIncome("GOOG", 2017)
-inc_g
+inc_g %>% kable() %>% kable_styling() %>% scroll_box(height = "400px")
 ```
+
+Amazon income statement is loaded
+
+```{r}
+inc_a<-GetIncome("AMZN", 2017)
+inc_a %>% kable() %>% kable_styling() %>% scroll_box(height = "400px")
+```
+
+### Build wide tables
 
 A wide table for Google is created
 
 ```{r}
 inc_wide_g<-inc_g %>% spread(Metric,Amount)
 inc_wide_g <- inc_wide_g %>% mutate(company="Google")
-inc_wide_g
+inc_wide_g %>% kable() %>% kable_styling() %>% scroll_box(height = "400px")
 ```
 
-Facebook income statement is loaded
+A wide table for Amazon is created
 
 ```{r}
-inc_f<-GetIncome("FB", 2017)
-inc_f
-```
-
-A wide table for Facebook is created
-
-```{r}
-inc_wide_f<-inc_f %>% spread(Metric,Amount)
-inc_wide_f <- inc_wide_f %>% mutate(company="Facebook")
-inc_wide_f
+inc_wide_a<-inc_a %>% spread(Metric,Amount)
+inc_wide_a <- inc_wide_a %>% mutate(company="Amazon")
+inc_wide_a %>% kable() %>% kable_styling() %>% scroll_box(height = "400px")
 ```
 
 A wide table containing all companies is created
 
 ```{r}
-inc_all<-bind_rows(inc_wide_f,inc_wide_g)
-inc_all
+inc_all<-bind_rows(inc_wide_a,inc_wide_g)
+inc_all %>% kable() %>% kable_styling() %>% scroll_box(height = "400px")
 ```
+
+### Extract only reveneu data
+
+**Find columns with revenue**
+```{r}
+rev <- inc_all %>% select(endDate,company,starts_with("Revenue")) 
+rev %>% kable() %>% kable_styling() %>% scroll_box(height = "400px")
+rev_col<-colnames(rev)
+rev_col<-rev_col[3:length(rev_col)]
+```
+
+**Build new long table with revenues**
+
+```{r}
+rev_only <- rev %>% unite('Revenue',rev_col)
+rev_only <- rev_only[!(rev_only$Revenue=="NA_NA"),]
+rev_only$Revenue<-gsub("[^0-9\\.]", "", rev_only$Revenue)
+rev_only <- rev_only %>% group_by(company)
+rev_only %>% kable() %>% kable_styling() %>% scroll_box(height = "400px")
+```
+
+#### Improvements
+
+- Plot data as a bar chart
+- Add a third company
+- Add a company with a different fiscal cycle
+
+#### References
+
+https://cran.r-project.org/web/packages/finreportr/vignettes/finreportr.html
+
+https://www.sec.gov/edgar.shtml
+
 
